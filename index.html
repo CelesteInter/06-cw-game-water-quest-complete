@@ -11,6 +11,14 @@
   <div class="container">
     <img src="img/cw_logo_horizontal.png" alt="Water Quest Logo" class="logo">
     <h1>Water Quest</h1>
+    <div class="difficulty-row" aria-label="Difficulty selector">
+      <span class="difficulty-label">Difficulty:</span>
+      <div class="difficulty-bar" role="group" aria-label="Select difficulty">
+        <button class="difficulty-option" data-level="easy" aria-pressed="false">Easy</button>
+        <button class="difficulty-option active" data-level="normal" aria-pressed="true">Normal</button>
+        <button class="difficulty-option" data-level="hard" aria-pressed="false">Hard</button>
+      </div>
+    </div>
     <p class="game-instructions">Collect 20 items to complete the game!</p>
     <div class="stats">
       <p>Cans Collected: <span id="current-cans">0</span></p>

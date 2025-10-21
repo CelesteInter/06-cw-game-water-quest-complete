@@ -7,6 +7,16 @@ let timeLeft = 30;          // Time left in seconds
 let timerInterval;         // Holds the interval for the countdown timer
 const scoreDisplay = document.getElementById('current-cans');
 
+// Difficulty configuration
+const DIFFICULTY_SETTINGS = {
+  easy:   { spawnMs: 1200, time: 40 },
+  normal: { spawnMs: 1000, time: 30 },
+  hard:   { spawnMs: 700,  time: 25 }
+};
+
+let difficulty = 'normal';
+let startingTime = DIFFICULTY_SETTINGS[difficulty].time; // Captures starting time for messages
+
 // Array of potential victory messages
 const VICTORY_MESSAGES = [
   "Victory! Let's go!",
@@ -85,7 +95,7 @@ function showVictoryMessage() {
     const instructions = document.querySelector('.game-instructions');
     victoryMsg = document.createElement('div');
     victoryMsg.id = 'victory-message';
-    victoryMsg.textContent = VICTORY_MESSAGES[Math.floor(Math.random() * VICTORY_MESSAGES.length)] + ` You collected ${currentCans} water cans in ${30 - timeLeft} seconds!`;
+    victoryMsg.textContent = VICTORY_MESSAGES[Math.floor(Math.random() * VICTORY_MESSAGES.length)] + ` You collected ${currentCans} water cans in ${startingTime - timeLeft} seconds!`;
     victoryMsg.style.marginBottom = '15px';
     victoryMsg.style.fontWeight = 'bold';
     victoryMsg.style.padding = '10px';
@@ -118,7 +128,11 @@ function startGame() {
 
   gameActive = true;
   createGrid(); // Set up the game grid
-  spawnInterval = setInterval(spawnWaterCan, 1000); // Spawn water cans every second
+  // Set starting time based on selected difficulty
+  startingTime = DIFFICULTY_SETTINGS[difficulty].time;
+  timeLeft = startingTime;
+  document.getElementById('timer').textContent = timeLeft;
+  applySpawnInterval(); // Spawn water cans based on difficulty
   timerInterval = setInterval(updateTimer, 1000); // Update the timer every second
 }
 
@@ -158,11 +172,52 @@ function endGame() {
   clearInterval(timerInterval); // Stop the timer
   currentCans = 0; // Reset the collected cans count
   scoreDisplay.textContent = currentCans; // Update the score display
-  timeLeft = 30; // Reset the timer
+  // Reset timer according to current difficulty
+  timeLeft = DIFFICULTY_SETTINGS[difficulty].time;
   document.getElementById('timer').textContent = timeLeft; // Reset timer display
 }
 
 // Set up click handler for the start button
 document.getElementById('start-game').addEventListener('click', startGame);
+
+// Helper: apply spawn interval based on difficulty
+function applySpawnInterval() {
+  clearInterval(spawnInterval);
+  const ms = DIFFICULTY_SETTINGS[difficulty].spawnMs;
+  spawnInterval = setInterval(spawnWaterCan, ms);
+}
+
+// Setup difficulty controls
+function setupDifficultyControls() {
+  const buttons = document.querySelectorAll('.difficulty-option');
+  if (!buttons.length) return;
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const level = btn.getAttribute('data-level');
+      if (!level || !DIFFICULTY_SETTINGS[level]) return;
+      difficulty = level;
+      startingTime = DIFFICULTY_SETTINGS[difficulty].time;
+
+      // Update active styles and aria states
+      buttons.forEach(b => {
+        const isActive = b === btn;
+        b.classList.toggle('active', isActive);
+        b.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+      });
+
+      // If the game is running, immediately apply new spawn rate;
+      // otherwise, update the displayed timer to the new starting time
+      if (gameActive) {
+        applySpawnInterval();
+      } else {
+        timeLeft = startingTime;
+        document.getElementById('timer').textContent = timeLeft;
+      }
+    });
+  });
+}
+
+// Initialize difficulty controls on load
+setupDifficultyControls();
 
 

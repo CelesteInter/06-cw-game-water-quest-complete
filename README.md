@@ -45,3 +45,14 @@ These are the minimum requirements, but if you'd like an additional challenge go
 
 If you have any questions or need any assistance with your code, reach out to the HelpHub or attend a Drop-In Hour. You got this!!
 
+
+## Difficulty Bar
+
+Use the Difficulty selector (Easy / Normal / Hard) to change how fast cans spawn and the starting timer:
+
+- Easy: slower spawns, 40s timer
+- Normal: default spawns, 30s timer
+- Hard: faster spawns, 25s timer
+
+You can change difficulty before starting a game, or while playing (spawn speed updates immediately; timer length updates on the next start).
+
