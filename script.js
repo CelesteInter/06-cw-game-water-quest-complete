@@ -54,7 +54,7 @@ createGrid();
 function spawnWaterCan() {
   if (!gameActive) return; // Stop if the game is not active
   const cells = document.querySelectorAll('.grid-cell');
-  
+
   // Clear all cells before spawning a new water can
   cells.forEach(cell => (cell.innerHTML = ''));
 
@@ -75,12 +75,16 @@ function spawnWaterCan() {
       currentCans++;
       console.log(`Water cans collected: ${currentCans}/${GOAL_CANS}`);
       scoreDisplay.textContent = currentCans; // Update the score display
+
+      // Play click sound effect
+      const clickSound = new Audio('clicksfx.mp3');
+      clickSound.play();
+
       // Remove the can after click to prevent multiple increments
       waterCan.removeEventListener('click', handleCanClick);
       waterCan.parentElement.remove();
 
       if (currentCans >= GOAL_CANS) {
-      
         showVictoryMessage();
         endGame();
       }
@@ -113,9 +117,9 @@ function showVictoryMessage() {
 
 // Initializes and starts a new game
 function startGame() {
-  if (gameActive) (
-    endGame()
-  );
+  if (gameActive) {
+    endGame();
+  }
 
   // Hide victory or try again message if present
   const victoryMsg = document.getElementById('victory-message');
@@ -125,6 +129,9 @@ function startGame() {
 
   const startButton = document.getElementById('start-game');
   startButton.textContent = 'Reset Game'; // Change button text to "Reset Game"
+
+  // Hide difficulty bar during gameplay
+  document.querySelector('.difficulty-row').style.display = 'none';
 
   gameActive = true;
   createGrid(); // Set up the game grid
@@ -175,10 +182,24 @@ function endGame() {
   // Reset timer according to current difficulty
   timeLeft = DIFFICULTY_SETTINGS[difficulty].time;
   document.getElementById('timer').textContent = timeLeft; // Reset timer display
+
+  // Show difficulty bar after gameplay ends
+  document.querySelector('.difficulty-row').style.display = 'flex';
+
+  // Change button text back to "Start Game"
+  const startButton = document.getElementById('start-game');
+  startButton.textContent = 'Start Game';
 }
 
 // Set up click handler for the start button
-document.getElementById('start-game').addEventListener('click', startGame);
+const startButton = document.getElementById('start-game');
+startButton.addEventListener('click', () => {
+  if (gameActive) {
+    endGame();
+  } else {
+    startGame();
+  }
+});
 
 // Helper: apply spawn interval based on difficulty
 function applySpawnInterval() {
@@ -219,5 +240,20 @@ function setupDifficultyControls() {
 
 // Initialize difficulty controls on load
 setupDifficultyControls();
+
+// Add toggle functionality for the info button
+const infoToggleButton = document.getElementById('info-toggle');
+const infoLinks = document.getElementById('info-links');
+
+infoToggleButton.addEventListener('click', () => {
+  const isExpanded = infoToggleButton.getAttribute('aria-expanded') === 'true';
+  infoToggleButton.setAttribute('aria-expanded', !isExpanded);
+  infoLinks.style.display = isExpanded ? 'none' : 'block';
+  if (isExpanded) {
+    infoToggleButton.textContent = '▼ Learn More';
+  } else {
+    infoToggleButton.textContent = '▲ Learn More';
+  }
+});
 
 
